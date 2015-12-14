@@ -36,10 +36,19 @@ public class Login
             public void actionPerformed(ActionEvent e)
             {
                 try {
+                    boolean userExistsAlready = userExists(loginName.getText());
+
+                    if(userExistsAlready)
+                    {
+                        JOptionPane.showMessageDialog(null, "User " + loginName.getText() + " already exists in application, please try to login with a different username.");
+                        loginName.setText("");
+                        return;
+                    }
+                    System.out.println(loginName.getText() + " exists?" + userExists(loginName.getText()));
                     Integer num = getUserId(loginName.getText());
                     if(num > 0)
                     {
-                        updateAvailablity(num); // this will change the value of available to 0 for users already present in database.
+                        //updateAvailablity(num); // this will change the value of available to 0 for users already present in database.
                     }
                     else
                         addUser(loginName.getText());
@@ -68,10 +77,20 @@ public class Login
                 {
                     try
                     {
+
+                        boolean userExistsAlready = userExists(loginName.getText());
+
+                        if(userExistsAlready)
+                        {
+                            JOptionPane.showMessageDialog(null, "User " + loginName.getText() + " already exists in application, please try to login with a different username.");
+                            loginName.setText("");
+                            return;
+                        }
+                        System.out.println(loginName.getText() + " exists?" + userExists(loginName.getText()));
                         Integer num = getUserId(loginName.getText());
                         if(num > 0)
                         {
-                            updateAvailablity(num); // this will change the value of available to 0 for users already present in database.
+                            //updateAvailablity(num); // this will change the value of available to 0 for users already present in database.
                         }
                         else
                         {
@@ -103,11 +122,9 @@ public class Login
 
         ResultSet resultSet = null;
         try {
-            String query = "insert into users(username, available) values(?, ?)";
+            String query = "insert into users(username) values(?)";
             PreparedStatement pStatement = connection.conn.prepareStatement(query);
-            //pStatement.setInt(1, 3);
             pStatement.setString(1, loginN);
-            pStatement.setBoolean(2, true);
             pStatement.execute();
             connection.conn.close();
 
@@ -138,7 +155,8 @@ public class Login
             connection.conn.close();
 
         }
-        catch (SQLException e) {
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
         return id;
@@ -167,5 +185,36 @@ public class Login
             System.out.print("An error occured: ");
             ex.printStackTrace();
         }
+    }
+
+    private static boolean userExists(String usrName)
+    {
+        DatabaseConnector connection = new DatabaseConnector();
+        Integer id = -1;
+
+        if(!connection.open())
+        {
+            System.out.println("unable to open connection");
+        }
+
+        String query = "select users.id from users where username=?";
+        try
+        {
+            PreparedStatement preparedStatement = connection.conn.prepareStatement(query);
+            preparedStatement.setString(1, usrName);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if(rs.next())
+            {
+                id = rs.getInt(1);
+            }
+            connection.conn.close();
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return id < 0 ? false : true;
     }
 }

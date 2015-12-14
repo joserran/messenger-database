@@ -1,8 +1,6 @@
 /**
  * Created by joserran on 11/24/2015.
  */
-
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -57,7 +55,7 @@ public class ChatServer
                     StringTokenizer st = new StringTokenizer(msgFromClient);
                     String loginName = st.nextToken();
                     String MsgType = st.nextToken();
-                    int lo = -1;
+                    int lo = -1; // dummy variable
                     String msg = "";
 
                     while(st.hasMoreTokens())
@@ -76,7 +74,6 @@ public class ChatServer
 
                     }
                     else if(MsgType.equals("LOGOUT"))
-
                     {
                         for (int i = 0; i < LoginNames.size(); i++)
                         {
