@@ -24,10 +24,11 @@ public class ChatClient extends JFrame implements Runnable
     String loginName;
     Statement stat;
 
-    ChatClient(String login) throws IOException
+    ChatClient(String login, int id) throws IOException
     {
         super(login);//call the super constructor to name the JFrame.
         loginName = login;
+        userId = id;
 
         ta = new JTextArea(18, 50);
         tf = new JTextField(50);
@@ -194,7 +195,7 @@ public class ChatClient extends JFrame implements Runnable
         }
     }
     public static void main(String[] args) throws IOException {
-        ChatClient client = new ChatClient("User2");
+
     }
 
     private static int markUserUnavailable(String loginN)

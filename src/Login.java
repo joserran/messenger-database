@@ -35,28 +35,24 @@ public class Login
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                try {
+                try
+                {
                     boolean userExistsAlready = userExists(loginName.getText());
-
                     if(userExistsAlready)
                     {
                         JOptionPane.showMessageDialog(null, "User " + loginName.getText() + " already exists in application, please try to login with a different username.");
                         loginName.setText("");
                         return;
                     }
-                    System.out.println(loginName.getText() + " exists?" + userExists(loginName.getText()));
-                    Integer num = getUserId(loginName.getText());
-                    if(num > 0)
-                    {
-                        //updateAvailablity(num); // this will change the value of available to 0 for users already present in database.
-                    }
-                    else
-                        addUser(loginName.getText());
-
-                    ChatClient client = new ChatClient(loginName.getText());
+                    addUser(loginName.getText());
+                    Integer userId = getUserId(loginName.getText());
+                    System.out.println(loginName.getText() + " " + userId);
+                    ChatClient client = new ChatClient(loginName.getText(), userId);
                     login.setVisible(false);
                     login.dispose();
-                } catch (IOException e1) {
+                }
+                catch (IOException e1)
+                {
                     e1.printStackTrace();
                 }
             }
@@ -77,28 +73,20 @@ public class Login
                 {
                     try
                     {
-
                         boolean userExistsAlready = userExists(loginName.getText());
-
                         if(userExistsAlready)
                         {
                             JOptionPane.showMessageDialog(null, "User " + loginName.getText() + " already exists in application, please try to login with a different username.");
                             loginName.setText("");
                             return;
                         }
-                        System.out.println(loginName.getText() + " exists?" + userExists(loginName.getText()));
-                        Integer num = getUserId(loginName.getText());
-                        if(num > 0)
-                        {
-                            //updateAvailablity(num); // this will change the value of available to 0 for users already present in database.
-                        }
-                        else
-                        {
-                            addUser(loginName.getText());
-                            ChatClient client = new ChatClient(loginName.getText());
-                            login.setVisible(false);
-                            login.dispose();
-                        }
+                        addUser(loginName.getText());
+                        Integer userId = getUserId(loginName.getText());
+                        System.out.println(loginName.getText() + " " + userId);
+                        ChatClient client = new ChatClient(loginName.getText(), userId);
+                        login.setVisible(false);
+                        login.dispose();
+
                     }
                     catch (IOException e1)
                     {

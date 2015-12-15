@@ -4,6 +4,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -87,8 +88,11 @@ public class ChatServer
                         }
                         if(lo >= 0)
                         {
+                            DatabaseOperations.deleteUser((String)LoginNames.elementAt(lo));
                             LoginNames.removeElementAt(lo);
                             ClientSockets.removeElementAt(lo);
+
+                            //DatabaseOperations.deleteUser(LoginNames.elementAt(lo));
                         }
                     }
                     else // standard data
