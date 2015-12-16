@@ -47,7 +47,7 @@ public class Login
                     addUser(loginName.getText());
                     Integer userId = getUserId(loginName.getText());
                     System.out.println(loginName.getText() + " " + userId);
-                    ChatClient client = new ChatClient(loginName.getText(), userId);
+                    new ChatClient(loginName.getText(), userId, 0);
                     login.setVisible(false);
                     login.dispose();
                 }
@@ -83,7 +83,7 @@ public class Login
                         addUser(loginName.getText());
                         Integer userId = getUserId(loginName.getText());
                         System.out.println(loginName.getText() + " " + userId);
-                        ChatClient client = new ChatClient(loginName.getText(), userId);
+                        new ChatClient(loginName.getText(), userId, 0);
                         login.setVisible(false);
                         login.dispose();
 

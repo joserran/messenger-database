@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.sql.*;
+import java.util.StringTokenizer;
 
 /**
  * Created by joserran on 11/24/2015.
@@ -23,12 +24,14 @@ public class ChatClient extends JFrame implements Runnable
     DataOutputStream dout;
     String loginName;
     Statement stat;
+    int groupId;
 
-    ChatClient(String login, int id) throws IOException
+    ChatClient(String login, int id, int grpId) throws IOException
     {
         super(login);//call the super constructor to name the JFrame.
         loginName = login;
         userId = id;
+        groupId = grpId;
 
         ta = new JTextArea(18, 50);
         tf = new JTextField(50);
@@ -82,9 +85,13 @@ public class ChatClient extends JFrame implements Runnable
         send.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    dout.writeUTF(loginName + " DATA " + tf.getText().toString());
-                    tf.setText("");
+                try
+                {
+                    if(tf.getText().length() > 0)
+                    {
+                        dout.writeUTF(loginName + " DATA " + tf.getText().toString());
+                        tf.setText("");
+                    }
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -111,7 +118,7 @@ public class ChatClient extends JFrame implements Runnable
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                executeAvailability();
+                DatabaseOperations.executeAvailability();
             }
         });
 
@@ -128,46 +135,7 @@ public class ChatClient extends JFrame implements Runnable
         setup() ;
     }
 
-    private static void executeAvailability()  {
-        DatabaseConnector connection = new DatabaseConnector();
-        if(!connection.open())
-            System.out.println("unable to connect");
 
-        ResultSet resultSet = null;
-        try
-        {
-            resultSet = connection.executeQuery("select * from users;");
-            ResultSetMetaData rsmd = resultSet.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-            while (resultSet.next())
-            {
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1) System.out.print(",  ");
-                    String columnValue = resultSet.getString(i);
-                    System.out.println("");
-                }
-            }
-            /*
-            resultSet = connection.executeQuery("select * from users;");
-            ResultSetMetaData rsmd = resultSet.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-            while (resultSet.next())
-            {
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1) System.out.print(",  ");
-                    String columnValue = resultSet.getString(i);
-                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
-                }
-                System.out.println("");
-            }
-            */
-
-        }
-            catch (SQLException e) {
-            e.printStackTrace();
-        }
-        connection.close();
-    }
 
     private void setup()
     {
@@ -187,43 +155,37 @@ public class ChatClient extends JFrame implements Runnable
     {
         while(true)
         {
-            try {
-                ta.append(" \n" + din.readUTF());
+            try
+            {
+                String msgFromClient = din.readUTF();
+                StringTokenizer st = new StringTokenizer(msgFromClient);
+                String loginName = st.nextToken();
+
+
+                if(loginName.equals("server"))//message is from server, special request
+                {
+                    String MsgType = st.nextToken();
+
+                    if(MsgType.equals("newRoom"))//create a new chatclient window
+                    {
+                        String token;
+                        token = st.nextToken();
+                        new ChatClient(loginName + " - " + token, userId, Integer.parseInt(token));
+                    }
+
+                }
+
+                else
+                    ta.append(" \n" + msgFromClient);//normal communication, display all text received from server onto text area.
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    public static void main(String[] args) throws IOException {
-
-    }
-
-    private static int markUserUnavailable(String loginN)
+    public static void main(String[] args) throws IOException
     {
-        DatabaseConnector connection = new DatabaseConnector();
-        Integer id = -1;
-        if(!connection.open())
-            System.out.println("unable to connect");
 
-        ResultSet resultSet = null;
-        try
-        {
-
-            String query = "select id from users where username=?";
-            PreparedStatement pStatement = connection.conn.prepareStatement(query);
-            pStatement.setString(1, loginN);
-            ResultSet rs = pStatement.executeQuery();
-
-            if(rs.next())
-            {
-                id = rs.getInt(1);
-            }
-            connection.conn.close();
-
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return id;
     }
+
 }
