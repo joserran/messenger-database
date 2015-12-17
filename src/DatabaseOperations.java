@@ -90,4 +90,29 @@ public class DatabaseOperations
         }
         connection.close();
     }
+
+    private static void updateAvailablity(Integer id) //never using in Login class
+    {
+        //Change the availablity to true because user is signing in
+        DatabaseConnector connection = new DatabaseConnector();
+
+        if(!connection.open())
+        {
+            System.out.println("unable to open connection");
+        }
+
+        try
+        {
+            String query = "update users set available = 0 where id = ?";
+            PreparedStatement pStatement = connection.conn.prepareStatement(query);
+            pStatement.setInt(1, id);
+            pStatement.execute();
+            connection.close();
+        }
+        catch(Exception ex)
+        {
+            System.out.print("An error occured: ");
+            ex.printStackTrace();
+        }
+    }
 }
